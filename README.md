@@ -28,6 +28,15 @@ Now, simply add `pulse` and/or `red` to the `data-filter` attribute of any eleme
     <div data-filter=red>I should be red</div>
     <div data-filter="red pulse">I should pulse and be red</div>
 
+### Return something useful
+
+When your element is filtered, anything a behavior returns will be stored on the element to retrieve later if you need it.
+
+    Element.behavior.something = function(){
+      return 'ftw';
+    };
+    el.retrieve('behavior-something'); // => 'ftw'
+
 ### Tips
 
 - You can add more data attributes to pull in to the filter function.
