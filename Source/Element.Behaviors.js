@@ -25,8 +25,8 @@ Element.behaviors.filterNow = function(){
 		element.get('data-filter').split(' ').each(function(filter){
 			var filter = filter.trim();
 			if (!Element.behaviors[filter] || element.retrieve('behavior-' + filter)) return;
-			var returns = Element.behaviors[filter].apply(element)
-			if (returns != null && returns != element) element.store('behavior-' + filter, returns);
+			var returns = Element.behaviors[filter].apply(element) || true;
+			element.store('behavior-' + filter, returns);
 		});
 	});
 };
