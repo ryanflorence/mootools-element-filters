@@ -24,10 +24,9 @@ Element.behaviors.filterNow = function(){
 	$$('[data-filter]').each(function(element){
 		element.get('data-filter').split(' ').each(function(filter){
 			var filter = filter.trim();
-			if (!Element.behaviors[filter]) return;
+			if (!Element.behaviors[filter] || element.retrieve('behavior-' + filter)) return;
 			var returns = Element.behaviors[filter].apply(element)
 			if (returns != null && returns != element) element.store('behavior-' + filter, returns);
-			element.set('data-filter', element.get('data-filter').replace(filter));
 		});
 	});
 };
