@@ -1,0 +1,64 @@
+<style>
+	#fixture {
+		width: 400px;
+		height: 250px;
+		padding-top: 50px;
+		margin: 40px;
+		text-align: center;
+		font-size: 20px;
+		border: solid 1px;
+	}
+</style>
+
+<div id=fixture data-filter="pulse:duration(2000):property(opacity), gray">I should pulse and have a gray background</div>
+
+<script src="/depender/build?require=Element.Behaviors/Element.Behaviors,Core/Fx.Tween"></script>
+
+<script>
+
+Object.append(Element.behaviors, {
+
+	pulse: function(options){
+		var periodical, 
+			tween = new Fx.Tween(this, { property: 'opacity', link: 'chain', duration: options.duration / 2 }),
+			pulse = function(){ tween.start(0).start(1) }, 
+			start = function(){ pulse(); periodical = pulse.periodical(options.duration) }, 
+			stop  = function(){ tween.cancel(); clearInterval(periodical) };
+
+		start();
+		return { tween: tween, start: start, stop: stop };
+	},
+
+	gray: function(){
+		this.setStyle('background', '#cccccc');
+	}
+
+});
+
+Element.behaviors.filterNow();
+
+// specs
+var fixture = $('fixture');
+
+var color = fixture.getStyle('background-color');
+console.assert(
+	color == '#cccccc', 
+	'Filters should be applied to elements',
+	'Expected #cccccc, got: ' + color
+);
+
+var returned = typeof fixture.retrieve('behavior-pulse').stop;
+console.assert(
+	returned == 'function',
+	'A filter should store the returned value on the element',
+	'Expected function, got: ' + returned
+);
+
+returned = fixture.retrieve('behavior-gray');
+console.assert(
+	returned,
+	'Filters should store `true` on the element, even if nothing is returned in the filter',
+	'Expected true, got: ' + returned
+);
+
+</script>

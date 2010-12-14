@@ -3,8 +3,6 @@
 
 name: Element.Behaviors
 
-description: Declaratively create instances of Element based objects.
-
 license: MIT-style license.
 
 copyright: Copyright (c) 2010 [Ryan Florence](http://ryanflorence.com/).
@@ -19,14 +17,17 @@ provides: [Element.Behaviors]
 ...
 */
 Element.behaviors = {};
-
 Element.behaviors.filterNow = function(){
 	$$('[data-filter]').each(function(element){
-		element.get('data-filter').split(' ').each(function(filter){
-			var filter = filter.trim();
+		var filters = element.get('data-filter');
+		Slick.parse(filters).expressions.each(function(slick){
+			var expression = slick[0],
+				filter = expression.tag,
+				pseudos = expression.pseudos,
+				options = {};
 			if (!Element.behaviors[filter] || element.retrieve('behavior-' + filter)) return;
-			var returns = Element.behaviors[filter].apply(element) || true;
-			element.store('behavior-' + filter, returns);
+			if (pseudos) for (var i = pseudos.length - 1; i >= 0; i--) options[pseudos[i].key] = pseudos[i].value;
+			element.store('behavior-' + filter, Element.behaviors[filter].apply(element, [options, slick]) || true);
 		});
 	});
 };
