@@ -19,15 +19,13 @@ provides: [Element.Behaviors]
 Element.behaviors = {};
 Element.behaviors.filterNow = function(){
 	$$('[data-filter]').each(function(element){
-		var filters = element.get('data-filter');
-		Slick.parse(filters).expressions.each(function(slick){
-			var expression = slick[0],
-				filter = expression.tag,
-				pseudos = expression.pseudos,
-				options = {};
-			if (!Element.behaviors[filter] || element.retrieve('behavior-' + filter)) return;
-			if (pseudos) for (var i = pseudos.length - 1; i >= 0; i--) options[pseudos[i].key] = pseudos[i].value;
-			element.store('behavior-' + filter, Element.behaviors[filter].apply(element, [options, slick]) || true);
+		element.get('data-filter').split(/ +|\t+|\n+/).each(function(raw){
+			var split = raw.split(':'),
+			    filter = split[0],
+			    options = JSON.parse((element.get('data-' + (split[1] || filter))) || '{}');
+			if (raw == '' || element.retrieve('behavior-' + raw)) return;
+			if (!Element.behaviors[filter]) throw new Error('Filter `' + filter + '` is undefined');
+			element.store('behavior-' + raw, Element.behaviors[filter].apply(element, [options]) || true);
 		});
 	});
 };

@@ -3,7 +3,7 @@ Element.Behaviors
 
 Detach your JavaScript from the DOM with Element.Behaviors. Describe the way elements are affected by JavaScript with a declarative interface.
 
-This can also serve as an alternative to structuring your application with a lot of classes.  Write quick, bang-it-out-domready code that's still organized into testable, portable code blocks--though not always recommended, just be careful :)
+This is perfect for creating widgets out of elements.  It can also serve as an alternative to structuring your application with a lot of classes.  Write quick, bang-it-out-domready code that's still organized into testable, portable code blocks--not necessarily recommended, just be careful :)
 
 How to use
 ----------
@@ -12,41 +12,36 @@ How to use
 
 Element.Behaviors picks up information from the `data-filter` attribute of an element.  In this example we'll use `pulse` and `gray`.  
 
-Note that the attribute is parsed by Slick, which means your value will resemble a CSS selector:
-
-- Multiple filters should be separated by commas.  
-- Pseudo "selectors" on first expression get combined and passed into your filter as a key:value options object.
-- The CSS selector "tag" equivalent is the the filter.
-- The Slick object is passed in as the third argument, though not expected to be very useful, one of you will come up with something whacky.  `who.knows > what[you=would]:do(with) ! all#this`.
-
-After all that nonsense, it's quite simple:
-
-    <div data-filter=gray>
-      I should be gray
+    <div
+    	data-filter="pulse pulse:pulse-two gray"
+    	data-pulse='{"duration":2000,"property":"opacity","from":0,"to":1}'
+    	data-pulse-two='{"duration":415,"property":"color","from":"#f00","to":"#32c"}'>
+    	I should pulse my opacity, and my color on different intervals, and have a gray background
     </div>
-    
-    <div data-filter="pulse:duration(4000):property(opacity), gray">
-      I should pulse every 4 seconds and be gray
-    </div>
+
+You can pass options in to the filter by
+
+1. creating a `data-match-filter-name` attribute like `data-pulse` or
+2. specify the `data` attribute your options are stored on like `pulse:pulse-two`.
+
+This allows you to use the same filter multiple times with different arguments.
 
 ### JavaScript
 
-Ideally your filters live outside of the application in an `app.js` or something similar.
+The JSON in your data attributes are parsed into an object and passed to the filter.  The context of the filter (`this`) is the element.
 
     Element.behaviors.pulse = function(options){
-      // options looks like `{duration: 4000, property: 'opacity'}`
-      // `this` is the element
-
       var periodical, 
-          tween = new Fx.Tween(this, { 
-            property: options.property, 
-            link: 'chain', 
-            duration: options.duration / 2 
-          }),
-          pulse = function(){ tween.start(0).start(1) }, 
-          start = function(){ periodical = pulse.periodical(options.duration) },
-          stop  = function(){ tween.cancel(); clearInterval(periodical) };
-    
+          tween = new Fx.Tween(this, {
+            property: options.property,
+            link: 'chain',
+            duration: options.duration / 2
+          });
+
+      function pulse(){ tween.start(options.from).start(options.to) }
+      function start(){ pulse(); periodical = pulse.periodical(options.duration) }
+      function stop(){ tween.cancel(); clearInterval(periodical) }
+
       start();
       return { tween: tween, start: start, stop: stop };
     };
@@ -67,3 +62,5 @@ When your element is filtered, anything a behavior returns will be stored on the
       return 'ftw';
     };
     el.retrieve('behavior-something'); // => 'ftw'
+
+You can also use this for garbage collection when you destroy an element.
