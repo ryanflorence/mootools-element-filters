@@ -1,17 +1,26 @@
-Element.behaviors.red = function(){
-	this.setStyle('color', 'red');
-};
+Object.append(Element.behaviors, {
 
-Element.behaviors.pulse = function(){
-	var periodical
-	, tween = new Fx.Tween(this, { property: 'opacity', link: 'chain' })
-	, pulse = function(){ tween.start(0).start(1) }
-	, start = function(){ periodical = pulse.periodical(1000) }
-	, stop  = function(){ tween.cancel(); clearInterval(periodical) };
-	start();
-	return { tween: tween, start: start, stop: stop };
-};
+	pulse: function(options){
+		var periodical, 
+			tween = new Fx.Tween(this, {
+				property: options.property,
+				link: 'chain',
+				duration: options.duration / 2
+			});
+			
+		function pulse(){ tween.start(options.from).start(options.to) }
+		function start(){ pulse(); periodical = pulse.periodical(options.duration) }
+		function stop(){ tween.cancel(); clearInterval(periodical) }
 
-window.addEvent('domready', function(){
-	Element.behaviors.filterNow();
+		start();
+		return { tween: tween, start: start, stop: stop };
+	},
+
+	gray: function(){
+		this.setStyle('background', '#cccccc');
+	}
+
 });
+
+
+window.addEvent('domready', Element.behaviors.filterNow);
