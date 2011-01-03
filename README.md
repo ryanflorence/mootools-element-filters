@@ -3,7 +3,7 @@ Element Filters
 
 Detach your JavaScript from the DOM with Element Filters. Describe the way elements are affected by JavaScript with a declarative interface.
 
-This is perfect for creating widgets out of elements.  Thing about the video tag, the browser sees that it's a special element, then applies some new styling and behavior to it.  You can now make any element into something more awesome.
+This is perfect for creating widgets out of elements.  Think about the video tag, the browser sees that it's a special element, then applies some new styling and behavior to it.  You can now similarly make any element into something more awesome.
 
 This pattern can also serve as an alternative application structure.  Write quick, bang-it-out domready code that's still organized into testable, portable code blocks--not necessarily recommended just be careful :)
 
