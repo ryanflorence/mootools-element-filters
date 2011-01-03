@@ -1,0 +1,87 @@
+<style>
+#fixture {
+	padding: 20px;
+	border: solid 1px;
+}
+</style>
+
+<div 
+	id=fixture 
+	filters="test test:test-two"
+	options-test='{"interval":250, "log":"log"}'
+	options-test-two='{"interval":333, "log":"log2"}'
+	>
+	Timers should be going.  When this element is disposed, the intervals should stop.<br>
+	<button id=dispose>Dispose Element</button>
+</div>
+<p id=log></p>
+<p id=log2></p>
+
+<script src="/depender/build?require=Element.Filters/Element.Filters,Core/Fx.Tween"></script>
+
+<script>
+
+// interactive test
+
+Element.setFilterOptions({
+	attribute: 'filters',
+	optionsPrefix: 'options-' 
+});
+
+Element.defineFilter('test', function(options){
+	var log = $(options.log),
+	    counter = 0,
+	    periodical = increment.periodical(options.interval);
+
+	function increment(){
+		log.set('text', ++counter);
+	}
+
+	this.addEvent('dispose', function(){
+		clearInterval(periodical);
+	});
+
+});
+
+Element.applyFilters();
+
+$('dispose').addEvent('click', function(){
+	$('fixture').dispose();
+});
+
+
+
+
+
+
+
+// specs
+var specElement, 
+    applyFilterFired = false,
+    disposedFired = false;
+
+function setup(){
+	specElement = new Element('div').inject(document.body);
+	defineFilterFired = false;
+	disposedFired = false;
+}
+
+setup();
+
+Element.defineFilter('spec', function(){
+	defineFilterFired = true;
+	applyFilterFired = true;
+	this.addEvent('dispose', function(){
+		disposedFired = true;
+	});
+	return this;
+});
+
+specElement.applyFilter('spec');
+console.assert(typeof Element.lookupFilter('spec') == 'function', 'Element function `defineFilter` should create a function, and `lookup` should retrieve it.')
+console.assert(applyFilterFired, 'Element method `applyFilter` should apply a filter to an element');
+
+specElement.dispose();
+console.assert(disposedFired, 'Element event `onDispose` should fire on dispose');
+
+</script>

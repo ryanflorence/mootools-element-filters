@@ -1,10 +1,10 @@
-name: Element.Behaviors
+name: "Element.Filters"
 
-author: rpflo
+author: "rpflo"
 
 copyright: "&copy; [Ryan Florence](http://ryanflorence.com)"
 
-license: MIT-style license.
+license: "MIT-style license."
 
 sources:
-  - "Source/Element.Behaviors.js"
+  - "Source/Element.Filters.js"

@@ -1,19 +1,19 @@
-Object.append(Element.behaviors, {
+Element.defineFilters({
 
 	pulse: function(options){
-		var periodical, 
-			tween = new Fx.Tween(this, {
-				property: options.property,
-				link: 'chain',
-				duration: options.duration / 2
-			});
-			
-		function pulse(){ tween.start(options.from).start(options.to) }
-		function start(){ pulse(); periodical = pulse.periodical(options.duration) }
-		function stop(){ tween.cancel(); clearInterval(periodical) }
+		var tween = new Fx.Tween(this, {
+			property: options.property,
+			link: 'chain',
+			duration: options.duration / 2
+		});
 
-		start();
-		return { tween: tween, start: start, stop: stop };
+		function pulse(){ tween.start(options.from).start(options.to) }
+		pulse();
+
+		return {
+			pulse: pulse, 
+			periodical: pulse.periodical(options.duration)
+		};
 	},
 
 	gray: function(){
@@ -23,4 +23,4 @@ Object.append(Element.behaviors, {
 });
 
 
-window.addEvent('domready', Element.behaviors.filterNow);
+document.addEvent('domready', Element.applyFilters);
