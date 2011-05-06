@@ -29,7 +29,7 @@ var _filters = {},
 
 var _parsers = {
 	json: function(params){
-		return JSON.parse(params || '{}');
+		return JSON.decode(params || '{}');
 	}
 };
 
